@@ -1,6 +1,9 @@
 package aitubesweka;
 
+
 import weka.classifiers.AbstractClassifier;
+import weka.core.Attribute;
+import weka.core.Instance;
 import weka.core.Instances;
 
 public class FeedForwardNeuralNetwork extends AbstractClassifier {
@@ -21,10 +24,19 @@ public class FeedForwardNeuralNetwork extends AbstractClassifier {
         classCount = ins.numClasses();
         attrCount = ins.numAttributes() - 1;
         
+        
+        
+        
+        
+        
         System.out.println(ins);
         System.out.println(proInstances);
         System.out.println(classCount);
         System.out.println(attrCount);
+        Attribute proAttr = ins.attribute(4);
+        Instance proIns = ins.get(1);
+        System.out.println("=====");
+        System.out.println(proAttr);
 		
 	}
 	
