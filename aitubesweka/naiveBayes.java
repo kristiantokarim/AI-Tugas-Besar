@@ -1,3 +1,5 @@
+package wekatubes;
+
 import weka.classifiers.AbstractClassifier;
 import weka.core.Attribute;
 import weka.core.Instance;
@@ -77,14 +79,14 @@ public class naiveBayes extends AbstractClassifier {
         }
     }
     @Override
-    public void buildClassifier(Instances inst) throws Exception {
+    public void buildClassifier(Instances ins) throws Exception {
         
-        getCapabilities().testWithFail(inst);
+        getCapabilities().testWithFail(ins);
 
         Discretize discretizeFilter = new Discretize();
-        discretizeFilter.setInputFormat(inst);
-        Instances ins = Filter.useFilter(inst, discretizeFilter);
-        
+        discretizeFilter.setInputFormat(ins);
+        ins = Filter.useFilter(ins, discretizeFilter);
+        System.out.println(ins.attribute(0).numValues());
         proInstances = new Instances(ins,0);
         classCount = ins.numClasses();
         attrCount = ins.numAttributes() - 1;
@@ -93,8 +95,9 @@ public class naiveBayes extends AbstractClassifier {
     }
     
     @Override
-    public double[] distributionForInstance(Instance instance) {
+    public double[] distributionForInstance(Instance ins) {
         double[] res = new double[classCount];
+       
         return res;
     }
 }
