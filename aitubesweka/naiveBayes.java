@@ -97,7 +97,17 @@ public class naiveBayes extends AbstractClassifier {
     @Override
     public double[] distributionForInstance(Instance ins) {
         double[] res = new double[classCount];
-       
+        double result = 1;
+        for (int i =0;i<classCount;i++){
+            for (int j=0; j<attrCount;j++){
+                String val = ins.stringValue(j);
+                
+                int valIdx = proInstances.attribute(i).indexOfValue(val);
+                result *= probTable[i][valIdx][0]; 
+            }
+            res[i] = classProbTable[i]*result;
+        }
+        // P = P(kelas)*P(att1|kelas)*P(att2*|kelas)....
         return res;
     }
 }
