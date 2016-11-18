@@ -1,12 +1,12 @@
-package aitubesweka;
+package wekatubes;
 
-
-import java.util.Enumeration;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.Utils;
+import weka.filters.Filter;
+import weka.filters.supervised.attribute.Discretize;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -27,49 +27,20 @@ public class naiveBayes extends AbstractClassifier {
     public double [][][] probTable;
     public double [] classProbTable;
     
-    /**
-     *
-     * @param ins
-     * @throws Exception
-     */
-    public void buildClassifier(Instances ins) throws Exception {
-        
-        if (ins.checkForStringAttributes()) {
-            throw new Exception("Can't handle string attributes!");
-        }
-        if (ins.classAttribute().isNumeric()) {
-            throw new Exception("Naive Bayes: Class is numeric!");
-        }
-        
-        proInstances = new Instances(ins,0);
-        classCount = ins.numClasses();
-        attrCount = ins.numAttributes() - 1;
-        
+    public void generateFreqTable(Instances ins) {
         probTable = new double[classCount][attrCount][0];
-        for (int i = 0 ; i < attrCount ; i++) {
-            Attribute proAttr = ins.attribute(i);
-            if (proAttr.isNominal()) {
-                for (int j = 0 ; j < classCount; j++) {
-                    probTable[j][i] = new double[proAttr.numValues()];
-                }
-            }
-            else {
-                for (int j = 0 ; j < classCount; j++) {
-                    probTable[j][i] = new double[1];
-                }
-            }
-        }
-        
         freqTable = new int[classCount][attrCount][0];
         for (int i = 0 ; i < attrCount ; i++) {
             Attribute proAttr = ins.attribute(i);
             if (proAttr.isNominal()) {
                 for (int j = 0 ; j < classCount; j++) {
+                    probTable[j][i] = new double[proAttr.numValues()];
                     freqTable[j][i] = new int[proAttr.numValues()];
                 }
             }
             else {
                 for (int j = 0 ; j < classCount; j++) {
+                    probTable[j][i] = new double[1];
                     freqTable[j][i] = new int[1];
                 }
             }
@@ -82,17 +53,14 @@ public class naiveBayes extends AbstractClassifier {
             if (!proIns.classIsMissing()) {
                 for (int j = 0 ; j < attrCount ; j++) {
                     Attribute proAttr = ins.attribute(j);
-                    if (proAttr.isNominal()) {
-                        freqTable[(int)proIns.classValue()][j][(int)proIns.value(proAttr)]++;
-                    }
-                    else {
-                        freqTable[(int)proIns.classValue()][j][0]++;
-                    }
+                    freqTable[(int)proIns.classValue()][j][(int)proIns.value(proAttr)]++;
                 }
             }
             classFreqTable[(int)proIns.classValue()]++;
         }
-        
+    }
+    
+    public void generateProbTable (Instances ins) {
         for (int i = 0 ; i < attrCount ; i++) {
             Attribute proAttr = ins.attribute(i);
             if (proAttr.isNominal()) {
@@ -110,5 +78,36 @@ public class naiveBayes extends AbstractClassifier {
             classProbTable[i] = ((double)classFreqTable[i])/((double)sum);
         }
     }
+    @Override
+    public void buildClassifier(Instances ins) throws Exception {
+        
+        getCapabilities().testWithFail(ins);
+
+        Discretize discretizeFilter = new Discretize();
+        discretizeFilter.setInputFormat(ins);
+        ins = Filter.useFilter(ins, discretizeFilter);
+        System.out.println(ins.attribute(0).numValues());
+        proInstances = new Instances(ins,0);
+        classCount = ins.numClasses();
+        attrCount = ins.numAttributes() - 1;
+        generateFreqTable(ins);
+        generateProbTable(ins);
+    }
     
+    @Override
+    public double[] distributionForInstance(Instance ins) {
+        double[] res = new double[classCount];
+        double result = 1;
+        for (int i =0;i<classCount;i++){
+            for (int j=0; j<attrCount;j++){
+                String val = ins.stringValue(j);
+                
+                int valIdx = proInstances.attribute(i).indexOfValue(val);
+                result *= probTable[i][valIdx][0]; 
+            }
+            res[i] = classProbTable[i]*result;
+        }
+        // P = P(kelas)*P(att1|kelas)*P(att2*|kelas)....
+        return res;
+    }
 }
