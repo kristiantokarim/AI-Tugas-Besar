@@ -34,7 +34,8 @@ public class Test {
 		//Read Data Set and assign to dataset
 		DataSource source = new DataSource("/home/cmrudi/weka-3-8-0/data/iris.arff");
 		Instances dataset = source.getDataSet();
-				
+		//String[] discOpts = new String[]{"-B","5","-R","5"};
+		//dataset = filterDiscretize(dataset, discOpts);	
 		//System.out.println(dataset);
 		
 		dataset.setClassIndex(dataset.numAttributes()-1);
