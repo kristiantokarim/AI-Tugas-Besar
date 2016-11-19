@@ -1,5 +1,7 @@
 package aitubesweka;
 
+import weka.classifiers.bayes.NaiveBayes;
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
@@ -32,7 +34,7 @@ public class Test {
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		//Read Data Set and assign to dataset
-		DataSource source = new DataSource("/home/cmrudi/weka-3-8-0/data/iris.arff");
+		DataSource source = new DataSource("/home/cmrudi/weka-3-8-0/data/check.arff");
 		Instances dataset = source.getDataSet();
 		//String[] discOpts = new String[]{"-B","5","-R","5"};
 		//dataset = filterDiscretize(dataset, discOpts);	
@@ -41,6 +43,11 @@ public class Test {
 		dataset.setClassIndex(dataset.numAttributes()-1);
 		FeedForwardNeuralNetwork FFNN = new FeedForwardNeuralNetwork();
 		FFNN.buildClassifier(dataset);
+		weka.core.SerializationHelper.write("saveFFNN.model", FFNN);
+		//FeedForwardNeuralNetwork loadFFNN = (FeedForwardNeuralNetwork) weka.core.SerializationHelper.read("saveFFNN.model");
+		
+		Instance ins = dataset.get(1);
+		//loadFFNN.classifyingInstance(ins);
 		
 	}
 

@@ -1,4 +1,4 @@
-package wekatubes;
+package aitubesweka;
 
 import weka.classifiers.AbstractClassifier;
 import weka.core.Attribute;
@@ -78,7 +78,6 @@ public class naiveBayes extends AbstractClassifier {
             classProbTable[i] = ((double)classFreqTable[i])/((double)sum);
         }
     }
-    @Override
     public void buildClassifier(Instances ins) throws Exception {
         
         getCapabilities().testWithFail(ins);
