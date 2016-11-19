@@ -1,6 +1,13 @@
-package aitubesweka;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package ffn;
 
-public class Node {
+import java.io.Serializable;
+
+public class Node implements Serializable{
 	
 	private static final int MaxNumberOfInput = 100;
 	private static final double InitialWeight = 1;
@@ -157,3 +164,4 @@ public class Node {
 		System.out.println();
 	}
 }
+

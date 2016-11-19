@@ -1,7 +1,13 @@
-package aitubesweka;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package ffn;
 
+import java.io.Serializable;
 
-public class NeuralNetwork {
+public class NeuralNetwork implements Serializable {
 	private Node[] firstLayer;
 	private Node[] outputLayer;
 	private double[] input;
