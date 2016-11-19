@@ -1,12 +1,11 @@
-package aitubesweka;
+package wekatubes;
 
 import weka.classifiers.AbstractClassifier;
+import weka.classifiers.Evaluation;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.Utils;
-import weka.filters.Filter;
-import weka.filters.supervised.attribute.Discretize;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -78,35 +77,46 @@ public class naiveBayes extends AbstractClassifier {
             classProbTable[i] = ((double)classFreqTable[i])/((double)sum);
         }
     }
+    @Override
     public void buildClassifier(Instances ins) throws Exception {
         
         getCapabilities().testWithFail(ins);
 
-        Discretize discretizeFilter = new Discretize();
-        discretizeFilter.setInputFormat(ins);
-        ins = Filter.useFilter(ins, discretizeFilter);
-        System.out.println(ins.attribute(0).numValues());
         proInstances = new Instances(ins,0);
         classCount = ins.numClasses();
         attrCount = ins.numAttributes() - 1;
         generateFreqTable(ins);
         generateProbTable(ins);
     }
-    
     @Override
     public double[] distributionForInstance(Instance ins) {
         double[] res = new double[classCount];
-        double result = 1;
+        double max = -1;
+        int imax = -1;
         for (int i =0;i<classCount;i++){
+            double result = 1;
             for (int j=0; j<attrCount;j++){
                 String val = ins.stringValue(j);
-                
-                int valIdx = proInstances.attribute(i).indexOfValue(val);
-                result *= probTable[i][valIdx][0]; 
+                int valIdx = ins.attribute(j).indexOfValue(val);
+                result *= probTable[i][j][valIdx]; 
             }
             res[i] = classProbTable[i]*result;
+            if (res[i] > max) {
+                max = res[i];
+                imax = i;
+            }
+            System.out.format("%01.20f\t",res[i]);
         }
-        // P = P(kelas)*P(att1|kelas)*P(att2*|kelas)....
+        System.out.println(ins.classAttribute().value(imax));
         return res;
     }
+    
+    public String resultString(Evaluation ev) throws Exception {
+        StringBuilder out = new StringBuilder();
+        out.append(ev.toSummaryString());
+        out.append(ev.toClassDetailsString());
+        out.append(ev.toMatrixString());
+        return out.toString();
+    }
+    
 }
