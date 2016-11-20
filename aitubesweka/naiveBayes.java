@@ -18,7 +18,6 @@ import weka.core.Utils;
  * @author programming
  */
 public class naiveBayes extends AbstractClassifier {
-    public Instances proInstances;
     public int classCount;
     public int attrCount;
     public int [][][] freqTable; 
@@ -82,7 +81,6 @@ public class naiveBayes extends AbstractClassifier {
         
         getCapabilities().testWithFail(ins);
 
-        proInstances = new Instances(ins,0);
         classCount = ins.numClasses();
         attrCount = ins.numAttributes() - 1;
         generateFreqTable(ins);
@@ -96,9 +94,7 @@ public class naiveBayes extends AbstractClassifier {
         for (int i =0;i<classCount;i++){
             double result = 1;
             for (int j=0; j<attrCount;j++){
-                String val = ins.stringValue(j);
-                int valIdx = ins.attribute(j).indexOfValue(val);
-                result *= probTable[i][j][valIdx]; 
+                result *= probTable[i][j][(int)ins.value(ins.attribute(j))]; 
             }
             res[i] = classProbTable[i]*result;
             if (res[i] > max) {
@@ -111,12 +107,6 @@ public class naiveBayes extends AbstractClassifier {
         return res;
     }
     
-    public String resultString(Evaluation ev) throws Exception {
-        StringBuilder out = new StringBuilder();
-        out.append(ev.toSummaryString());
-        out.append(ev.toClassDetailsString());
-        out.append(ev.toMatrixString());
-        return out.toString();
-    }
+    
     
 }
