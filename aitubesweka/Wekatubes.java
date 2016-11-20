@@ -47,6 +47,9 @@ public class Wekatubes {
         Discretize dis = new Discretize();
         dis.setInputFormat(train);
         train = Filter.useFilter(train, dis);
+        for (int i = 0 ; i < train.numInstances() ; i++) {
+            System.out.println(train.get(i).value(train.attribute(0)) + "\t" + train.get(i).value(train.attribute(1)) + "\t" + train.get(i).value(train.attribute(2)) + "\t" + train.get(i).value(train.attribute(3)) + "\t" + train.get(i).value(train.attribute(4)) );
+        }
         System.out.println("1. Buat model klasifikasi");
         System.out.println("2. Evaluasi test data dengan model yang sudah ada");
         int pil = in.nextInt();
@@ -92,7 +95,7 @@ public class Wekatubes {
                 train = new Instances(train, 0, trainSize);
                 break;
             case 2 :
-                test = new Instances(train,0, train.numInstances());
+                test = new Instances(read,0, train.numInstances());
                 break;
             case 3 :
                 System.out.print("Masukan lokasi data : ");
@@ -132,12 +135,26 @@ public class Wekatubes {
                 eval.crossValidateModel(cls, test,10, new Random(1));
                 break;
             case 2 :
+                for (int i = 0 ; i < ((naiveBayes)cls).attrCount ; i++) {
+                    for (int j = 0 ; j < train.attribute(i).numValues(); j++) {
+                        for (int k = 0 ; k < ((naiveBayes)cls).classCount ; k++) {
+                            System.out.print(((naiveBayes)cls).probTable[k][i][j] + " ");
+                        }
+                        System.out.println("");
+                    }
+                    System.out.println();
+                }
+                for (int i = 0 ; i < ((naiveBayes)cls).classCount ; i++) {
+                    System.out.println(((naiveBayes)cls).classProbTable[i]   + " ");
+                }
+                System.out.println("");
                 eval.evaluateModel(cls, test);
                 break;
         }
         System.out.println(eval.toClassDetailsString());
         System.out.println(eval.toSummaryString());
         System.out.println(eval.toMatrixString());
+        System.out.println(eval.toString());
         
     }
     

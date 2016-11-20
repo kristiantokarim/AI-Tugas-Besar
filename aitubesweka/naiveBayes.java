@@ -65,7 +65,7 @@ public class naiveBayes extends AbstractClassifier {
                 for (int j = 0 ; j < classCount ; j++) {
                     int sum = Utils.sum(freqTable[j][i]);
                     for (int k = 0 ; k < proAttr.numValues() ; k++) {
-                        probTable[j][i][k] = ((double)freqTable[j][i][k])/((double)sum);
+                        probTable[j][i][k] = ((double)freqTable[j][i][k]+1)/((double)sum + proAttr.numValues());
                     }
                 }
             }
@@ -73,7 +73,7 @@ public class naiveBayes extends AbstractClassifier {
         
         int sum = Utils.sum(classFreqTable);
         for (int i = 0 ; i < classCount ; i++) {
-            classProbTable[i] = ((double)classFreqTable[i])/((double)sum);
+            classProbTable[i] = ((double)classFreqTable[i] + 1)/((double)sum + (double)classCount);
         }
     }
     @Override
@@ -103,6 +103,7 @@ public class naiveBayes extends AbstractClassifier {
             }
             System.out.format("%01.20f\t",res[i]);
         }
+        Utils.normalize(res);
         System.out.println(ins.classAttribute().value(imax));
         return res;
     }
