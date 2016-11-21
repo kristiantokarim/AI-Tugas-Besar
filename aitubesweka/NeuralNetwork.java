@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ffn;
+package aitubesweka;
 
 import java.io.Serializable;
 
@@ -40,8 +40,14 @@ public class NeuralNetwork implements Serializable {
 			firstLayer[i] = new Node(numberOfInput);
 		}
 		
-		for (int i = 0; i < numberOfOutputLayer; i++) {
-			outputLayer[i] = new Node(numberOfFirstLayer);
+		if (numberOfFirstLayer != 0) {
+			for (int i = 0; i < numberOfOutputLayer; i++) {
+				outputLayer[i] = new Node(numberOfFirstLayer);
+			}
+		} else {
+			for (int i = 0; i < numberOfOutputLayer; i++) {
+				outputLayer[i] = new Node(numberOfInput);
+			}
 		}
 		
 	}
@@ -92,9 +98,14 @@ public class NeuralNetwork implements Serializable {
 	
 	public double[] countFirstLayerOutput() {
 		double[] result = new double[numberOfFirstLayer];
-		for (int i =0; i < numberOfFirstLayer; i++) {
-			result[i] = firstLayer[i].countOutput(input);
- 		}
+		if (numberOfFirstLayer != 0) {
+			for (int i =0; i < numberOfFirstLayer; i++) {
+				result[i] = firstLayer[i].countOutput(input);
+	 		}
+		}
+		else {
+			System.out.println("On NeuralNetwork class, countFirstLayerOutput method, cannot calculate firstlayer output");
+		}
 		return result;
 	}
 	
@@ -123,8 +134,13 @@ public class NeuralNetwork implements Serializable {
 	
 	public double[] countOutput() {
 		double[] result;
-		result = countFirstLayerOutput();
-		result = countOuputLayerOutput(result);
+		if (numberOfFirstLayer!=0) {
+			result = countFirstLayerOutput();
+			result = countOuputLayerOutput(result);
+		}
+		else {
+			result = countOuputLayerOutput(input);
+		}
 		return result;
 	}
 	
@@ -145,14 +161,19 @@ public class NeuralNetwork implements Serializable {
 	
 	public double[] countFirstLayerError() {
 		double[] error = new double[numberOfFirstLayer];
-		double weightxerror;
-		for(int j = 0; j < numberOfFirstLayer; j++) {
-			weightxerror = 0;
-			for (int i = 0; i < numberOfOutputLayer; i++) {
-				weightxerror = weightxerror + (outputLayer[i].getError()*outputLayer[i].getWeight(j));
+		if (numberOfFirstLayer !=0) {	
+			double weightxerror;
+			for(int j = 0; j < numberOfFirstLayer; j++) {
+				weightxerror = 0;
+				for (int i = 0; i < numberOfOutputLayer; i++) {
+					weightxerror = weightxerror + (outputLayer[i].getError()*outputLayer[i].getWeight(j));
+				}
+				
+				error[j] = firstLayer[j].countErrorFirstLayer(weightxerror);
 			}
-			
-			error[j] = firstLayer[j].countErrorFirstLayer(weightxerror);
+		}
+		else {
+			System.out.println("On NeuralNetwork class, countFirstLayerError method, cannot calculate error");
 		}
 		return error;
 	}
@@ -179,12 +200,19 @@ public class NeuralNetwork implements Serializable {
 	 */
 	
 	public void updateOutputLayerWeight() {
-		double[] firstLayerOutput = new double[numberOfFirstLayer];
-		for (int i =0; i < numberOfFirstLayer; i++) {
-			firstLayerOutput[i] = firstLayer[i].getOutput();
+		double[] inputLayer;
+		if (numberOfFirstLayer != 0) {
+			double[] firstLayerOutput = new double[numberOfFirstLayer];
+			for (int i =0; i < numberOfFirstLayer; i++) {
+				firstLayerOutput[i] = firstLayer[i].getOutput();
+			}
+			inputLayer = firstLayerOutput;
+		}
+		else {
+			inputLayer = input;
 		}
 		for(int i =0; i < outputLayer.length; i++) {
-			outputLayer[i].updateWeight(firstLayerOutput);
+			outputLayer[i].updateWeight(inputLayer);
 		}
 	}
 	
@@ -207,9 +235,11 @@ public class NeuralNetwork implements Serializable {
 	 */
 	
 	public void printAllWeight() {
-		System.out.println("First Layer Node");
-		for(int i =0; i < numberOfFirstLayer; i++) {
-			firstLayer[i].printWeight();
+		if (numberOfFirstLayer != 0) {
+			System.out.println("First Layer Node");
+			for(int i =0; i < numberOfFirstLayer; i++) {
+				firstLayer[i].printWeight();
+			}
 		}
 		System.out.println("Output Layer Node");
 		for (int i = 0; i < numberOfOutputLayer; i++) {
@@ -217,3 +247,4 @@ public class NeuralNetwork implements Serializable {
 		}
 	}
 }
+

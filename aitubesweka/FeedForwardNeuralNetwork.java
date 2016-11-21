@@ -41,15 +41,23 @@ public class FeedForwardNeuralNetwork extends AbstractClassifier {
         double[] instance;
         double[] check;
         double[] input = new double[attrCount];
-        double[] target = new double[1];
-        nn = new NeuralNetwork(attrCount,2,1);
+        double[] target = new double[classCount];
+        nn = new NeuralNetwork(attrCount,2,classCount);
         for (int i =0; i < ins.numInstances(); i++) {
         	proIns = ins.get(i);
         	instance = proIns.toDoubleArray();
         	for (int j = 0; j < instance.length - 1; j++) {
         		input[j] = instance[j];
         	}
-        	target[0] = instance[attrCount];
+        	for (int j = 0; j < classCount; j++) {
+        		if(((int) instance[attrCount]) != j) {
+        			target[j] = 0;
+        		}
+        		else {
+        			target[j] = 1;
+        		}
+        		System.out.println(i + ": target["+j+"] = "+target[j]);
+        	}
         	
         	//Initialize Input
         	nn.setInput(input);
@@ -58,7 +66,7 @@ public class FeedForwardNeuralNetwork extends AbstractClassifier {
             nn.countOutput();
             //Back Propagation
             nn.countOutputLayerError();
-            nn.setLearningRate(1);
+            nn.setLearningRate(0.1);
             nn.updateOutputLayerWeight();
             nn.countFirstLayerError();
             nn.updateFirstLayerWeight();
@@ -83,6 +91,9 @@ public class FeedForwardNeuralNetwork extends AbstractClassifier {
 		return result;
 	}
 	
-	
+	public double[] distributionForInstance(Instance instance) throws Exception {
+		return classifyingInstance(instance);
+	  }
 	
 }
+

@@ -1,5 +1,6 @@
 package aitubesweka;
 
+import weka.classifiers.Evaluation;
 import weka.classifiers.bayes.NaiveBayes;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -32,9 +33,10 @@ public class Test {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
+		double[] tes = new double[0];
 		// TODO Auto-generated method stub
 		//Read Data Set and assign to dataset
-		DataSource source = new DataSource("/home/cmrudi/weka-3-8-0/data/check.arff");
+		DataSource source = new DataSource("/home/cmrudi/weka-3-8-0/data/iris.arff");
 		Instances dataset = source.getDataSet();
 		//String[] discOpts = new String[]{"-B","5","-R","5"};
 		//dataset = filterDiscretize(dataset, discOpts);	
@@ -43,12 +45,22 @@ public class Test {
 		dataset.setClassIndex(dataset.numAttributes()-1);
 		FeedForwardNeuralNetwork FFNN = new FeedForwardNeuralNetwork();
 		FFNN.buildClassifier(dataset);
-		weka.core.SerializationHelper.write("saveFFNN.model", FFNN);
-		//FeedForwardNeuralNetwork loadFFNN = (FeedForwardNeuralNetwork) weka.core.SerializationHelper.read("saveFFNN.model");
 		
-		Instance ins = dataset.get(1);
+		Instance ins;
+		for (int i = 1; i < 150; i++) {
+			System.out.println(i+":");
+			FFNN.classifyingInstance(dataset.get(i));
+		}
+		weka.core.SerializationHelper.write("saveFFNN.model", FFNN);
+		FeedForwardNeuralNetwork loadFFNN = (FeedForwardNeuralNetwork) weka.core.SerializationHelper.read("saveFFNN.model");
+		
 		//loadFFNN.classifyingInstance(ins);
+		
+		//Evaluation ev = new Evaluation(dataset);
+		//ev.evaluateModel(FFNN,dataset);
+		//System.out.println(ev.toSummaryString());
 		
 	}
 
 }
+
